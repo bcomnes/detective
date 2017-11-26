@@ -7,21 +7,21 @@ var fastFind = require('./find-fast');
 var requireRe = /\brequire\b/;
 
 function getParseOpts (opts) {
-  opts = opts || {};
-  return {
-    ecmaVersion: defined(opts.ecmaVersion, 8),
-    sourceType: opts.sourceType,
-    ranges: defined(opts.ranges, opts.range),
-    locations: defined(opts.locations, opts.loc),
-    allowReserved: defined(opts.allowReserved, true),
-    allowReturnOutsideFunction: defined(
-        opts.allowReturnOutsideFunction, true
-    ),
-    allowImportExportEverywhere: defined(
-        opts.allowImportExportEverywhere, true
-    ),
-    allowHashBang: defined(opts.allowHashBang, true)
-  };
+    opts = opts || {};
+    return {
+        ecmaVersion: defined(opts.ecmaVersion, 8),
+        sourceType: opts.sourceType,
+        ranges: defined(opts.ranges, opts.range),
+        locations: defined(opts.locations, opts.loc),
+        allowReserved: defined(opts.allowReserved, true),
+        allowReturnOutsideFunction: defined(
+            opts.allowReturnOutsideFunction, true
+        ),
+        allowImportExportEverywhere: defined(
+            opts.allowImportExportEverywhere, true
+        ),
+        allowHashBang: defined(opts.allowHashBang, true)
+    };
 }
 
 var exports = module.exports = function (src, opts) {
