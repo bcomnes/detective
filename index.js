@@ -1,25 +1,26 @@
 var acorn = require('acorn');
 var walk = require('acorn/dist/walk');
 var defined = require('defined');
+var fastFind = require('./find-fast');
 
 var requireRe = /\brequire\b/;
 
-function parse (src, opts) {
-    if (!opts) opts = {};
-    return acorn.parse(src, {
-        ecmaVersion: defined(opts.ecmaVersion, 8),
-        sourceType: opts.sourceType,
-        ranges: defined(opts.ranges, opts.range),
-        locations: defined(opts.locations, opts.loc),
-        allowReserved: defined(opts.allowReserved, true),
-        allowReturnOutsideFunction: defined(
-            opts.allowReturnOutsideFunction, true
-        ),
-        allowImportExportEverywhere: defined(
-            opts.allowImportExportEverywhere, true
-        ),
-        allowHashBang: defined(opts.allowHashBang, true)
-    });
+function getParseOpts (opts) {
+  opts = opts || {};
+  return {
+    ecmaVersion: defined(opts.ecmaVersion, 8),
+    sourceType: opts.sourceType,
+    ranges: defined(opts.ranges, opts.range),
+    locations: defined(opts.locations, opts.loc),
+    allowReserved: defined(opts.allowReserved, true),
+    allowReturnOutsideFunction: defined(
+        opts.allowReturnOutsideFunction, true
+    ),
+    allowImportExportEverywhere: defined(
+        opts.allowImportExportEverywhere, true
+    ),
+    allowHashBang: defined(opts.allowHashBang, true)
+  };
 }
 
 var exports = module.exports = function (src, opts) {
@@ -28,6 +29,11 @@ var exports = module.exports = function (src, opts) {
 
 exports.find = function (src, opts) {
     if (!opts) opts = {};
+    opts = Object.assign({}, opts, { parse: getParseOpts(opts.parse) });
+
+    if (!opts.isRequire && !opts.fullParse) {
+        return fastFind(src, opts);
+    }
     
     var word = opts.word === undefined ? 'require' : opts.word;
     if (typeof src !== 'string') src = String(src);
@@ -44,7 +50,7 @@ exports.find = function (src, opts) {
     var wordRe = word === 'require' ? requireRe : RegExp('\\b' + word + '\\b');
     if (!wordRe.test(src)) return modules;
     
-    var ast = parse(src, opts.parse);
+    var ast = acorn.parse(src, opts.parse);
     
     function visit(node, st, c) {
         var hasRequire = wordRe.test(src.slice(node.start, node.end));
