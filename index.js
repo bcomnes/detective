@@ -1,5 +1,9 @@
 var acorn
-try { acorn = require('acorn5-object-spread/inject')(require('acorn')); }
+var plugins = {}
+try { 
+    acorn = require('acorn5-object-spread/inject')(require('acorn'));
+    plugins.objectSpread = true
+}
 catch (_) { acorn = require('acorn') }
 var walk = require('acorn/dist/walk');
 var defined = require('defined');
@@ -21,7 +25,7 @@ function parse (src, opts) {
             opts.allowImportExportEverywhere, true
         ),
         allowHashBang: defined(opts.allowHashBang, true),
-        plugins: { objectSpread: true }
+        plugins: plugins
     });
 }
 
